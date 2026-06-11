@@ -29,17 +29,6 @@ interface TraceData {
   response: UserResponse | null
 }
 
-// ---------------------------------------------------------------------------
-// InlineLink
-// ---------------------------------------------------------------------------
-
-function InlineLink({ to, children }: { to: string; children: React.ReactNode }) {
-  return (
-    <Link to={to} className="underline underline-offset-2 hover:text-muted-foreground">
-      {children}
-    </Link>
-  )
-}
 
 // ---------------------------------------------------------------------------
 // UserTable — zeigt den gefundenen Datensatz

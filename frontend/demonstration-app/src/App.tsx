@@ -30,7 +30,7 @@ function Home() {
     <div className="flex min-h-svh flex-col items-center justify-center gap-8">
       <h1 className="text-3xl font-bold">Was ist...?</h1>
 
-      <Carousel className="w-full max-w-sm">
+      <Carousel className="w-full max-w-sm" opts={{ loop: true }}>
         <CarouselContent>
           {sections.map((section) => (
             <CarouselItem key={section.id}>

@@ -143,3 +143,4 @@ C:\Users\Vera\Desktop\Demonstration App\backend\DemonstrationApp.Api\bin\Debug\n
 C:\Users\Vera\Desktop\Demonstration App\backend\DemonstrationApp.Api\obj\Debug\net10.0\DemonstrationApp.Api.csproj.AssemblyReference.cache
 C:\Users\Vera\Desktop\Demonstration App\backend\DemonstrationApp.Api\obj\Debug\net10.0\DemonstrationApp.Api.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Vera\Desktop\Demonstration App\backend\DemonstrationApp.Api\obj\Debug\net10.0\Demonstr.193AFC5D.Up2Date
+C:\Users\Vera\Desktop\Demonstration App\backend\DemonstrationApp.Api\obj\Debug\net10.0\DemonstrationApp.Api.sourcelink.json

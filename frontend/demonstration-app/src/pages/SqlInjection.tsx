@@ -22,10 +22,17 @@ interface UserResponse {
   socialSecurityNumber: string
 }
 
+// Entspricht LoginResponse aus dem Backend
+interface LoginResponse {
+  user: UserResponse
+  executedSql: string
+}
+
 interface TraceData {
   endpoint: "login" | "login-unsafe"
   request: { username: string; authTan: string }
   status: number
+  executedSql: string | null
   response: UserResponse | null
 }
 
@@ -95,31 +102,29 @@ function CodeTrace({ trace }: { trace: TraceData | null }) {
     )
   }
 
-  const { endpoint, request, status, response } = trace
+  const { endpoint, request, status, executedSql, response } = trace
   const isSafe = endpoint === "login"
 
   const controllerCode = isSafe
-    ? `// EF Core übersetzt das zu parametrisiertem SQL:
-// SELECT * FROM "Users" WHERE "Username" = @p0 AND "AuthTan" = @p1
-
-var user = await db.Users.FirstOrDefaultAsync(u =>
+    ? `var query = db.Users.Where(u =>
     u.Username == request.Username &&
     u.AuthTan  == request.AuthTan);
 
-if (user is null) return Unauthorized();
-return Ok(UserResponse.FromEntity(user));`
-    : `// ⚠️ UNSICHER: String-Interpolation ohne Parametrisierung!
-// Nutzereingaben werden direkt in den SQL-String eingebaut.
+var executedSql = query.ToQueryString();
+var user = await query.FirstOrDefaultAsync();
 
+if (user is null) return Unauthorized();
+return Ok(new LoginResponse(UserResponse.FromEntity(user), executedSql));`
+    : `// ⚠️ UNSICHER: String-Interpolation ohne Parametrisierung!
 var sql = $"SELECT * FROM Users " +
-          $"WHERE Username = '{request.Username}' " +
-          $"AND AuthTan = '{request.AuthTan}'";
+          $"WHERE Username = '{request.username}' " +
+          $"AND AuthTan = '{request.authTan}'";
 
 var users = await db.Users.FromSqlRaw(sql).ToListAsync();
 var user = users.FirstOrDefault();
 
 if (user is null) return Unauthorized();
-return Ok(UserResponse.FromEntity(user));`
+return Ok(new LoginResponse(UserResponse.FromEntity(user), sql));`
 
   const responseText = response
     ? JSON.stringify(response, null, 2)
@@ -139,7 +144,13 @@ return Ok(UserResponse.FromEntity(user));`
 
       <Arrow />
 
-      <TraceBlock step="③" label={`Response — ${status} ${status === 200 ? "OK" : "Unauthorized"}`}>
+      <TraceBlock step="③" label="Ausgeführtes SQL">
+        {executedSql ?? "(nicht verfügbar)"}
+      </TraceBlock>
+
+      <Arrow />
+
+      <TraceBlock step="④" label={`Response — ${status} ${status === 200 ? "OK" : "Unauthorized"}`}>
         {responseText}
       </TraceBlock>
     </div>
@@ -170,12 +181,12 @@ function LoginForm({ onTrace }: { onTrace: (trace: TraceData) => void }) {
       })
 
       if (res.ok) {
-        const data: UserResponse = await res.json()
-        setResult(data)
-        onTrace({ endpoint, request: body, status: 200, response: data })
+        const data: LoginResponse = await res.json()
+        setResult(data.user)
+        onTrace({ endpoint, request: body, status: 200, executedSql: data.executedSql, response: data.user })
       } else if (res.status === 401) {
         setError("Ungültige Zugangsdaten.")
-        onTrace({ endpoint, request: body, status: 401, response: null })
+        onTrace({ endpoint, request: body, status: 401, executedSql: null, response: null })
       } else {
         setError("Unbekannter Fehler.")
       }

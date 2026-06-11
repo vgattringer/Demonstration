@@ -20,24 +20,28 @@ public class AuthController(AppDbContext db) : ControllerBase
 
     /// <summary>
     /// Prüft Username und TAN gegen die Datenbank.
-    /// Gibt den zugehörigen User zurück oder 401 bei ungültigen Zugangsdaten.
+    /// Gibt den zugehörigen User sowie den ausgeführten SQL-String zurück (nur für Demo-Zwecke).
     /// </summary>
     [HttpPost("login")]
-    [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<UserResponse>> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
     {
-        // Sicherer Vergleich: beide Felder müssen übereinstimmen.
-        // EF Core übersetzt das in ein parametrisiertes SQL — kein Risiko für SQL-Injection.
-        var user = await db.Users.FirstOrDefaultAsync(u =>
+        // IQueryable aufbauen — noch nicht ausführen
+        var query = db.Users.Where(u =>
             u.Username == request.Username &&
             u.AuthTan  == request.AuthTan);
+
+        // ToQueryString() liefert den parametrisierten SQL den EF Core generiert —
+        // inklusive der @p0/@p1-Platzhalter, ohne echte Werte einzusetzen.
+        var executedSql = query.ToQueryString();
+
+        var user = await query.FirstOrDefaultAsync();
 
         if (user is null)
             return Unauthorized();
 
-        // AuthTan wird bewusst nicht im Response zurückgegeben
-        return Ok(UserResponse.FromEntity(user));
+        return Ok(new LoginResponse(UserResponse.FromEntity(user), executedSql));
     }
 
     // -------------------------------------------------------------------------
@@ -50,9 +54,9 @@ public class AuthController(AppDbContext db) : ControllerBase
     /// Eingabe ' OR '1'='1 als Username umgeht die Authentifizierung.
     /// </summary>
     [HttpPost("login-unsafe")]
-    [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<UserResponse>> LoginUnsafe([FromBody] LoginRequest request)
+    public async Task<ActionResult<LoginResponse>> LoginUnsafe([FromBody] LoginRequest request)
     {
         // ⚠️ NIEMALS so in einer echten Anwendung!
         // Der Query wird direkt aus Nutzereingaben zusammengebaut — kein Schutz gegen Injection.
@@ -64,6 +68,6 @@ public class AuthController(AppDbContext db) : ControllerBase
         if (user is null)
             return Unauthorized();
 
-        return Ok(UserResponse.FromEntity(user));
+        return Ok(new LoginResponse(UserResponse.FromEntity(user), sql));
     }
 }

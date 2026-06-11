@@ -1,0 +1,16 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "compilerOptions": {
+    // Basis-URL für relative Imports — ermöglicht den @/* Alias
+    "baseUrl": ".",
+    "paths": {
+      // @/* wird zu ./src/* aufgelöst.
+      // shadcn-Komponenten importieren z.B. so: import { Button } from "@/components/ui/button"
+      "@/*": ["./src/*"]
+    }
+  }
+}

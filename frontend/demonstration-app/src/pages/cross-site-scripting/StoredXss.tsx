@@ -100,18 +100,18 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
         </p>
         <p className="text-sm text-muted-foreground">
           Ein Angreifer legt auf{" "}
-          <span className="font-medium">www.seite.at / Account anlegen</span> einen Account an
-          und trägt als Username Schadcode ein.
+          <span className="font-medium">www.seite.at </span> einen Account an
+          und trägt im Kommentarfeld einen Schadcode ein.
         </p>
 
         {phase === "attacker" ? (
           <>
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="stored-input-attacker">Username eingeben</Label>
+                <Label htmlFor="stored-input-attacker">Kommentar posten:</Label>
                 <PayloadLinks
                   onMalicious={() => setInput(XSS_PAYLOAD)}
-                  onLegit={() => setInput("max.keinhacker")}
+                  onLegit={() => setInput("Ich möchte auch meinen Quargel posten.")}
                 />
               </div>
               <Input id="stored-input-attacker" value={input} readOnly />
@@ -155,10 +155,10 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
             <>
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="stored-input-user">Username eingeben</Label>
+                  <Label htmlFor="stored-input-user">Kommentar suchen:</Label>
                   <PayloadLinks
                     onMalicious={() => setInput(XSS_PAYLOAD)}
-                    onLegit={() => setInput("max.keinhacker")}
+                    onLegit={() => setInput("Gib mir alle Post aus.")}
                   />
                 </div>
                 <Input id="stored-input-user" value={input} readOnly />
@@ -195,7 +195,7 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
               ) : (
                 <p className="text-xs text-muted-foreground">
                   Ein anderer User besucht ebenfalls <span className="font-medium">www.seite.at</span> und
-                  gibt seine Userdaten ein. Er klickt auf Absenden (manchmal reicht es auch schon, die Seite
+                  und möchte sich über das Suchfeld alle Posts ausgeben lassen. Er klickt auf Submit (manchmal reicht es auch schon, die Seite
                   einfach nur zu besuchen) und löst den Schadcode aus.
                 </p>
               )}

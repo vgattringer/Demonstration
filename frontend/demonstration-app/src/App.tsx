@@ -15,6 +15,10 @@ import SqlInjectionSchutz from "@/pages/sql-injection/SqlInjectionSchutz"
 import CrossSiteScripting from "@/pages/CrossSiteScripting"
 import CrossSiteRequestForgery from "@/pages/CrossSiteRequestForgery"
 import StoredVsReflectedXss from "@/pages/StoredVsReflectedXss"
+import XssSchutz from "@/pages/cross-site-scripting/XssSchutz"
+import Sast from "@/pages/cross-site-scripting/Sast"
+import Dast from "@/pages/cross-site-scripting/Dast"
+import Iast from "@/pages/cross-site-scripting/Iast"
 
 // Jeder Eintrag kennt seinen Titel und seinen Zielpfad.
 const sections = [
@@ -63,6 +67,10 @@ function App() {
       <Route path="/sql-injection/time-based"         element={<TimeBasedSqli />} />
       <Route path="/sql-injection/schutz"             element={<SqlInjectionSchutz />} />
       <Route path="/xss"                element={<CrossSiteScripting />} />
+      <Route path="/cross-site-scripting/schutz" element={<XssSchutz />} />
+      <Route path="/cross-site-scripting/sast"   element={<Sast />} />
+      <Route path="/cross-site-scripting/dast"   element={<Dast />} />
+      <Route path="/cross-site-scripting/iast"   element={<Iast />} />
       <Route path="/csrf"               element={<CrossSiteRequestForgery />} />
       <Route path="/stored-vs-reflected" element={<StoredVsReflectedXss />} />
     </Routes>

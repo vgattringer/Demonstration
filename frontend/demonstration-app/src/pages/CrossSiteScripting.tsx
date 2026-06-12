@@ -33,7 +33,7 @@ export default function CrossSiteScripting() {
           </CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm">
             <p>
-              Cross-Site Scripting (XSS)-Angriffe sind eine Art von Injection, bei der schädliche Skripte in ansonsten harmlose und vertrauenswürdige Webseiten eingeschleust werden. XSS-Angriffe treten auf, wenn ein Angreifer eine Webanwendung nutzt, um schädlichen Code – in der Regel in Form eines browserseitigen Skripts – an einen anderen Endbenutzer zu senden.
+              Cross-Site Scripting (XSS) ist – wie SQL Injection – eine Injection-Angriffstechnik, jedoch richtet sie sich nicht gegen die Datenbank, sondern gegen den Browser des Benutzers. Ein Angreifer schleust schädlichen JavaScript-Code in eine verwundbare Webanwendung ein, der dann im Browser anderer Benutzer ausgeführt wird.
             </p>
             <p>
               Ein Angreifer kann XSS nutzen, um einem ahnungslosen Benutzer ein schädliches Skript zu senden. Der Browser des Endbenutzers hat keine Möglichkeit zu erkennen, dass dem Skript nicht vertraut werden sollte, und führt es aus. Da der Browser davon ausgeht, dass das Skript aus einer vertrauenswürdigen Quelle stammt, kann das schädliche Skript auf alle Cookies, Session-Tokens oder andere sensible Informationen zugreifen, die der Browser gespeichert hat und mit dieser Seite verwendet. Diese Skripte können sogar den Inhalt der HTML-Seite umschreiben.

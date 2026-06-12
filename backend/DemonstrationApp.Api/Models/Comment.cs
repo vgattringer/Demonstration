@@ -9,7 +9,7 @@ public class Comment
 {
     public int Id { get; set; }
 
-    // ⚠️ Inhalt wird absichtlich NICHT sanitisiert – für die XSS-Demonstration
+    // ⚠️ Inhalt wird absichtlich NICHT sanitized – für die XSS-Demonstration
     public required string Content { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

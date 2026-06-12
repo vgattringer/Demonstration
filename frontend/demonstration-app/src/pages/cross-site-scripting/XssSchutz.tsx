@@ -28,14 +28,17 @@ export default function XssSchutz() {
               <Link to="/cross-site-scripting/iast" className="underline underline-offset-2 hover:text-muted-foreground">interaktiven (IAST)</Link>{" "}
               Application-Security-Testing-Tools in die CI/CD-Pipeline kann dabei helfen,
               Injection-Schwachstellen vor dem Produktivbetrieb zu identifizieren.{" "}
-              <a
-                href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2 hover:text-foreground"
-              >
-                owasp
-              </a>
+              <p>
+                <a
+                  href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-foreground"
+                >
+                  
+                  Link: Cross Site Scripting Prevention Cheat Sheet
+                </a>
+              </p>
             </p>
 
             <div className="flex flex-col gap-2">
@@ -64,12 +67,38 @@ export default function XssSchutz() {
               </table>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <pre className="bg-muted rounded p-3 text-xs overflow-x-auto whitespace-pre">{`<!-- Unsicher -->
-<p>Willkommen, <?= $_GET['name'] ?></p>
+            <div className="flex flex-col gap-3">
 
-<!-- Sicher -->
-<p>Willkommen, <?= htmlspecialchars($_GET['name'], ENT_QUOTES, 'UTF-8') ?></p>`}</pre>
+              {/* Unsicher mit Tooltip */}
+              <div className="flex flex-col gap-1">
+                <div className="relative group w-fit">
+                  <p className="text-xs font-semibold text-destructive cursor-help underline decoration-dotted underline-offset-2">
+                    ✗ Unsicher
+                  </p>
+                  <div className="absolute bottom-full left-0 mb-2 w-80 rounded-md bg-popover border border-border shadow-md px-3 py-2 text-xs text-popover-foreground invisible group-hover:visible z-50 leading-relaxed">
+                    <p className="font-semibold mb-1">Warum ist das gefährlich?</p>
+                    <p><code className="bg-muted px-0.5 rounded">$_GET['name']</code> liest den URL-Parameter direkt aus und gibt ihn 1:1 als HTML aus. Ein Angreifer kann dort beliebiges HTML oder JavaScript einschleusen, das der Browser des Opfers sofort ausführt.</p>
+                  </div>
+                </div>
+                <pre className="bg-muted rounded p-3 text-xs overflow-x-auto whitespace-pre">{`<p>Willkommen, <?= $_GET['name'] ?></p>`}</pre>
+              </div>
+
+              {/* Sicher mit Tooltip */}
+              <div className="flex flex-col gap-1">
+                <div className="relative group w-fit">
+                  <p className="text-xs font-semibold text-green-600 cursor-help underline decoration-dotted underline-offset-2">
+                    ✓ Sicher
+                  </p>
+                  <div className="absolute bottom-full left-0 mb-2 w-80 rounded-md bg-popover border border-border shadow-md px-3 py-2 text-xs text-popover-foreground invisible group-hover:visible z-50 leading-relaxed">
+                    <p className="font-semibold mb-1">Was macht htmlspecialchars()?</p>
+                    <p><code className="bg-muted px-0.5 rounded">htmlspecialchars()</code> wandelt Sonderzeichen in HTML-Entities um: <code className="bg-muted px-0.5 rounded">{"<"}</code> → <code className="bg-muted px-0.5 rounded">&amp;lt;</code>, <code className="bg-muted px-0.5 rounded">{">"}</code> → <code className="bg-muted px-0.5 rounded">&amp;gt;</code> usw.</p>
+                    <p className="mt-1"><code className="bg-muted px-0.5 rounded">ENT_QUOTES</code> encodiert zusätzlich einfache und doppelte Anführungszeichen. <code className="bg-muted px-0.5 rounded">'UTF-8'</code> stellt korrekte Zeichenkodierung sicher.</p>
+                    <p className="mt-1">Resultat: Der Browser zeigt den Inhalt als Text — kein HTML wird interpretiert.</p>
+                  </div>
+                </div>
+                <pre className="bg-muted rounded p-3 text-xs overflow-x-auto whitespace-pre">{`<p>Willkommen, <?= htmlspecialchars($_GET['name'], ENT_QUOTES, 'UTF-8') ?></p>`}</pre>
+              </div>
+
             </div>
 
           </CardContent>

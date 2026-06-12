@@ -67,7 +67,7 @@ public class AuthController(AppDbContext db) : ControllerBase
 
         if (user is null)
             return Unauthorized();
-
+        
         return Ok(new LoginResponse(UserResponse.FromEntity(user), sql));
     }
 }

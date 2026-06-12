@@ -13,6 +13,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     // DbSet repräsentiert eine Tabelle — hier die Tabelle "Users"
     public DbSet<User> Users => Set<User>();
 
+    // Tabelle für die Stored-XSS-Demo
+    public DbSet<Comment> Comments => Set<Comment>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // HasData() befüllt die Tabelle beim ersten Anlegen mit Mock-Daten.

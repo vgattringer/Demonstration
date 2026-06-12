@@ -1,0 +1,29 @@
+# ─── Node / npm ───────────────────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# ─── Umgebungsvariablen ───────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── .NET / C# ───────────────────────────────────────────
+bin/
+obj/
+*.user
+.vs/
+
+# ─── SQLite-Datenbank ─────────────────────────────────────
+*.db
+*.db-shm
+*.db-wal
+
+# ─── JetBrains IDEs (Rider / WebStorm) ───────────────────
+# Auskommentieren, wenn du .idea/ im Repo behalten möchtest
+.idea/
+
+# ─── Betriebssystem ───────────────────────────────────────
+.DS_Store
+Thumbs.db

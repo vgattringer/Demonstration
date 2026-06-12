@@ -1,27 +1,56 @@
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import CsrfInfoCard from "@/components/CsrfInfoCard.tsx"
+import GetCsrf from "@/pages/cross-site-request-forgery/GetCsrf.tsx"
+import PostCsrf from "@/pages/cross-site-request-forgery/PostCsrf.tsx"
+
+type CsrfMode = "get" | "post"
 
 export default function CrossSiteRequestForgery() {
+  const [mode, setMode] = useState<CsrfMode | null>(null)
+
   return (
     <div className="flex min-h-svh flex-col p-8 gap-6">
 
       <div className="flex flex-1 gap-4">
 
-        <Card className="flex-1 shadow-md">
-          <CardHeader>
-            <CardTitle className="font-bold">Was ist Cross-Site Request Forgery (CSRF)?</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3 text-sm">
-            {/* Inhalt folgt */}
-          </CardContent>
-        </Card>
+        <CsrfInfoCard className="flex-1 shadow-md" />
 
         <Card className="flex-1 shadow-md">
           <CardHeader>
             <CardTitle className="font-bold">Was passiert bei Cross-Site Request Forgery (CSRF)?</CardTitle>
           </CardHeader>
-          <CardContent>
-            {/* Inhalt folgt */}
+          <CardContent className="flex flex-col gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  {mode === "get" ? "GET Scenario" : mode === "post" ? "POST Scenario" : "Wähle Demonstration"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-40">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>CSRF Attack</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup value={mode ?? ""} onValueChange={(v) => setMode(v as CsrfMode)}>
+                    <DropdownMenuRadioItem value="get">GET Scenario</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="post">POST Scenario</DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {mode === "get" && <GetCsrf />}
+            {mode === "post" && <PostCsrf />}
           </CardContent>
         </Card>
 

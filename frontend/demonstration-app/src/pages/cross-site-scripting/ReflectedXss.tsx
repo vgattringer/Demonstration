@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Arrow, TraceBlock, XSS_PAYLOAD, ReflectedOutput } from "./shared"
+
+const DISPLAY_URL = `https://seite.at/suche?q=<img src=x onerror="...">`
+const ATTACK_URL = `https://seite.at/suche?q=${XSS_PAYLOAD}`
 
 // ---------------------------------------------------------------------------
 // ReflectedXss
 // ---------------------------------------------------------------------------
 
 export function ReflectedXss({ onOutput }: { onOutput: (o: ReflectedOutput) => void }) {
-  const [input, setInput] = useState("")
-  const [output, setOutput] = useState<ReflectedOutput | null>(null)
+  const [clicked, setClicked] = useState(false)
   const [xssTriggered, setXssTriggered] = useState(false)
 
   useEffect(() => {
@@ -19,85 +18,62 @@ export function ReflectedXss({ onOutput }: { onOutput: (o: ReflectedOutput) => v
     return () => document.removeEventListener("xss-triggered", handler)
   }, [])
 
-  function handle(safe: boolean) {
-    setXssTriggered(false)
-    const o = { value: input, safe }
-    setOutput(o)
-    onOutput(o)
+  function handleLinkClick(e: React.MouseEvent) {
+    e.preventDefault()
+    setClicked(true)
+    onOutput({ value: XSS_PAYLOAD, safe: false })
   }
 
   return (
     <div className="flex flex-col gap-3 text-sm">
-      <p className="text-sm text-muted-foreground">
-        Als Angreifer besuche ich eine vertrauenswürdige Seite und gebe im Kommentarbereich folgenden Code ein:
-      </p>
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="xss-input">Kommentar eingeben</Label>
-          <button
-            type="button"
-            onClick={() => setInput(XSS_PAYLOAD)}
-            className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-          >
-            Payload einfügen
-          </button>
+
+      {/* 4-Schritt-Erklärung */}
+      <ol className="flex flex-col gap-1 text-sm text-muted-foreground list-decimal list-inside">
+        <li>
+          Angreifer baut eine manipulierte URL:{" "}
+          <code className="bg-muted px-1 rounded text-xs break-all">{DISPLAY_URL}</code>
+        </li>
+        <li>Opfer klickt diesen Link (z.B. aus einer Phishing-Mail)</li>
+        <li>Der Server/die Seite liest den URL-Parameter und rendert ihn zurück („reflects")</li>
+        <li>Das Skript führt sich im Browser des Opfers aus</li>
+      </ol>
+
+      {/* Mock-E-Mail */}
+      <div className="rounded-md border text-xs overflow-hidden">
+        <div className="bg-muted px-3 py-2 flex flex-col gap-0.5 border-b">
+          <p><span className="font-semibold">Von:</span> support@seite.at.evil.com</p>
+          <p><span className="font-semibold">An:</span> opfer@beispiel.at</p>
+          <p><span className="font-semibold">Betreff:</span> ⚠ Ihr Konto wurde gesperrt – sofort handeln</p>
         </div>
-        <Input id="xss-input" value={input} readOnly placeholder={XSS_PAYLOAD} />
+        <div className="px-3 py-3 flex flex-col gap-2 text-foreground">
+          <p>Hallo,</p>
+          <p>
+            Ihr Konto auf <span className="font-medium">seite.at</span> wurde aus
+            Sicherheitsgründen vorübergehend gesperrt. Bitte klicken Sie auf den folgenden
+            Link, um Ihr Konto sofort wiederherzustellen:
+          </p>
+          <a
+            href={ATTACK_URL}
+            onClick={handleLinkClick}
+            className="text-blue-600 underline underline-offset-2 break-all hover:text-blue-800 cursor-pointer"
+          >
+            Jetzt Konto wiederherstellen →
+          </a>
+          <p className="text-muted-foreground text-[11px] break-all">{ATTACK_URL}</p>
+          <p className="mt-1">Mit freundlichen Grüßen<br />Support-Team seite.at</p>
+        </div>
       </div>
 
-      <div className="flex gap-2">
-        <Button type="button" className="flex-1" onClick={() => handle(true)}>
-          Sicher rendern
-        </Button>
-        <Button type="button" variant="destructive" className="flex-1" onClick={() => handle(false)}>
-          Unsicher rendern
-        </Button>
-      </div>
-
+      {/* XSS Banner */}
       {xssTriggered && (
         <div className="rounded-md bg-destructive/10 border border-destructive px-3 py-2 text-xs font-semibold text-destructive">
           ⚠ XSS erfolgreich! Schadcode wurde ausgeführt.
         </div>
       )}
 
-      {output && (
-        <div className="flex flex-col gap-1">
-          <p className="text-xs font-semibold text-muted-foreground">Ausgabe:</p>
-          <div className="rounded-md border bg-muted p-3 text-sm min-h-[2.5rem]">
-            {output.safe
-              // ✅ SICHER: React escaped den Input – wird als plain text gerendert
-              ? <span>{output.value}</span>
-              // ⚠️ UNSICHER: dangerouslySetInnerHTML umgeht Reacts Schutz – HTML wird ausgeführt
-              : <span dangerouslySetInnerHTML={{ __html: output.value }} />
-            }
-          </div>
-          <p className={`text-xs ${output.safe ? "text-green-600" : "text-destructive"}`}>
-            {output.safe
-              ? "✓ Sicher: React escaped den Input automatisch."
-              : "⚠ Unsicher: dangerouslySetInnerHTML rendert den Input als HTML – eingebettetes JavaScript wird ausgeführt."}
-          </p>
-        </div>
-      )}
-
-      {output && (
-        <p className="text-xs text-muted-foreground">
-          {output.safe ? (
-            <>
-              <code className="bg-muted px-1 rounded">{XSS_PAYLOAD}</code>{' '}
-              wird von React als einfacher Text behandelt und nicht als HTML interpretiert.
-              Das <code className="bg-muted px-1 rounded">onerror</code>-Event wird nie ausgelöst –
-              der Schadcode bleibt wirkungslos.
-            </>
-          ) : (
-            <>
-              <code className="bg-muted px-1 rounded">{XSS_PAYLOAD}</code>{' '}
-              versucht ein Bild mit der ungültigen Quelle <code className="bg-muted px-1 rounded">x</code> zu laden.
-              Da das Laden fehlschlägt, feuert der Browser das <code className="bg-muted px-1 rounded">onerror</code>-Event
-              und führt den darin enthaltenen JavaScript-Code aus.
-              In einem echten Angriff würde hier z.B. der Session-Cookie des Opfers gestohlen.
-            </>
-          )}
-        </p>
+      {/* ⚠️ UNSICHER: Payload aus URL wird als HTML gerendert – Reflected XSS */}
+      {clicked && (
+        <div className="hidden" dangerouslySetInnerHTML={{ __html: XSS_PAYLOAD }} />
       )}
     </div>
   )
@@ -111,45 +87,40 @@ export function ReflectedCodeTrace({ output }: { output: ReflectedOutput | null 
   if (!output) {
     return (
       <p className="text-xs text-muted-foreground">
-        Klicke auf „Sicher rendern" oder „Unsicher rendern", um den Code-Ablauf zu sehen.
+        Klicke auf den Link in der E-Mail, um den Code-Ablauf zu sehen.
       </p>
     )
   }
 
-  const safeCode = `// ✓ SICHER: React escaped automatisch
-// JSX behandelt den Wert als Text, nicht als HTML
-<span>{userInput}</span>
-
-// Gerendert im DOM:
-// <span>&lt;img src=x onerror="document.dispatchEvent(...)"&gt;</span>`
-
-  const unsafeCode = `// ⚠ UNSICHER: dangerouslySetInnerHTML
-// React umgeht seinen eigenen Escape-Mechanismus
-<span dangerouslySetInnerHTML={{ __html: userInput }} />
-
-// Gerendert im DOM:
-// <span><img src=x onerror="document.dispatchEvent(...)"></span>
-// → onerror feuert → CustomEvent "xss-triggered" wird ausgelöst`
-
   return (
     <div className="flex flex-col gap-3 text-xs">
-      <TraceBlock step="①" label="User-Input">
-        {output.value}
+      <TraceBlock step="①" label="Manipulierte URL (Angreifer)">
+        {DISPLAY_URL}
       </TraceBlock>
 
       <Arrow />
 
-      <TraceBlock step="②" label={output.safe ? "React JSX (sicher)" : "dangerouslySetInnerHTML (unsicher)"}>
-        {output.safe ? safeCode : unsafeCode}
+      <TraceBlock step="②" label="Opfer öffnet Link → Seite liest URL-Parameter">
+        {`// React liest den Query-Parameter aus der URL
+const [searchParams] = useSearchParams()
+const q = searchParams.get("q")
+// q = '<img src=x onerror="document.dispatchEvent(...)">'`}
       </TraceBlock>
 
       <Arrow />
 
-      <TraceBlock step="③" label={output.safe ? "Browser rendert Text" : "Browser führt Script aus"}>
-        {output.safe
-          ? `→ Payload wird als plain text angezeigt.\n   Kein Event feuert. Kein Schaden.`
-          : `→ <img> wird in den DOM eingefügt.\n   src="x" schlägt fehl → onerror feuert.\n   CustomEvent "xss-triggered" wird dispatched.\n   React Banner: "⚠ XSS erfolgreich!"`
-        }
+      <TraceBlock step="③" label="dangerouslySetInnerHTML rendert Payload als HTML">
+        {`// ⚠️ UNSICHER: Parameter wird direkt als HTML gerendert
+<div dangerouslySetInnerHTML={{ __html: q }} />
+
+// Gerendert im DOM:
+// <div><img src=x onerror="document.dispatchEvent(...)"></div>`}
+      </TraceBlock>
+
+      <Arrow />
+
+      <TraceBlock step="④" label="Browser führt Script aus">
+        {`→ <img> wird in den DOM eingefügt.\n   src="x" schlägt fehl → onerror feuert.\n   CustomEvent "xss-triggered" wird dispatched.\n   React Banner: "⚠ XSS erfolgreich!"`}
       </TraceBlock>
     </div>
   )

@@ -95,6 +95,22 @@ export default function CrossSiteScripting() {
       <Link to="/" className="text-sm underline underline-offset-4">
         ← Zurück zur Übersicht
       </Link>
+
+      {/* Fixer Button unten rechts Card 2 */}
+      <Link to="/stored-vs-reflected" className="fixed bottom-6 right-[calc(33.1%+1rem)]">
+        <Button className="rounded-lg shadow-lg">
+          Stored versus Reflected XSS
+        </Button>
+      </Link>
+
+      {/* Fixer Button unten rechts Card 3 */}
+      <Link to="/cross-site-scripting/schutz" className="fixed bottom-6 right-6">
+        <Button className="rounded-lg shadow-lg">
+          Welche Schutzmöglichkeiten gibt es?
+        </Button>
+      </Link>
+    
+      
     </div>
   )
 }

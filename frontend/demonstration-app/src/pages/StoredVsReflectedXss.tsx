@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { Button } from "@/components/ui/button"
 
 export default function StoredVsReflectedXss() {
   return (
@@ -63,6 +64,13 @@ export default function StoredVsReflectedXss() {
 
       <Link to="/" className="text-sm underline underline-offset-4">
         ← Zurück zur Übersicht
+      </Link>
+
+      {/* Rücknavigation oben rechts */}
+      <Link to="/xss" className="fixed top-6 right-6">
+        <Button className="rounded-lg shadow-lg">
+          Was passiert bei Cross-Site Scripting (XSS)?
+        </Button>
       </Link>
     </div>
   )

@@ -21,7 +21,6 @@ obj/
 *.db-wal
 
 # ─── JetBrains IDEs (Rider / WebStorm) ───────────────────
-# Auskommentieren, wenn du .idea/ im Repo behalten möchtest
 .idea/
 
 # ─── Betriebssystem ───────────────────────────────────────

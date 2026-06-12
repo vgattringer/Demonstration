@@ -68,6 +68,13 @@ export default function CrossSiteRequestForgery() {
       <Link to="/" className="text-sm underline underline-offset-4">
         ← Zurück zur Übersicht
       </Link>
+
+      {/* Fixer Button unten rechts */}
+      <Link to="/cross-site-request-forgery/CrsfSchutz" className="fixed bottom-6 right-6">
+        <Button className="rounded-lg shadow-lg">
+          Welche Schutzmöglichkeiten gibt es?
+        </Button>
+      </Link>
     </div>
   )
 }

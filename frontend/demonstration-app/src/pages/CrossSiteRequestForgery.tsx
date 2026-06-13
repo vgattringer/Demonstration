@@ -12,10 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import CsrfInfoCard from "@/components/CsrfInfoCard.tsx"
+import DeleteCrsf from "@/pages/cross-site-request-forgery/DeleteCrsf.tsx"
 import GetCsrf from "@/pages/cross-site-request-forgery/GetCsrf.tsx"
-import PostCsrf from "@/pages/cross-site-request-forgery/PostCsrf.tsx"
 
-type CsrfMode = "get" | "post"
+type CsrfMode = "delete" | "get"
 
 export default function CrossSiteRequestForgery() {
   const [mode, setMode] = useState<CsrfMode | null>(null)
@@ -35,22 +35,22 @@ export default function CrossSiteRequestForgery() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
-                  {mode === "get" ? "GET Scenario" : mode === "post" ? "POST Scenario" : "Wähle Demonstration"}
+                  {mode === "delete" ? "DELETE Szenario" : mode === "get" ? "GET Szenario" : "Wähle Demonstration"}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-40">
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel>CSRF Attack</DropdownMenuLabel>
+                  <DropdownMenuLabel>CSRF Attacke</DropdownMenuLabel>
                   <DropdownMenuRadioGroup value={mode ?? ""} onValueChange={(v) => setMode(v as CsrfMode)}>
-                    <DropdownMenuRadioItem value="get">GET Scenario</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="post">POST Scenario</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="delete">DELETE Szenario</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="get">GET Szenario</DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {mode === "delete" && <DeleteCrsf />}
             {mode === "get" && <GetCsrf />}
-            {mode === "post" && <PostCsrf />}
           </CardContent>
         </Card>
 

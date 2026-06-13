@@ -43,7 +43,7 @@ export default function CrossSiteScripting() {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-40">
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel>XSS Attack</DropdownMenuLabel>
+                  <DropdownMenuLabel>XSS Attacke</DropdownMenuLabel>
                   <DropdownMenuRadioGroup value={mode ?? ""} onValueChange={(v) => setMode(v as XssMode)}>
                     <DropdownMenuRadioItem value="reflected">XSS Reflected</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="stored">XSS Stored</DropdownMenuRadioItem>

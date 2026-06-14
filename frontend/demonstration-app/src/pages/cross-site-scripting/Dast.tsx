@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+/**
+ * Erklärungsseite: Dynamic Application Security Testing (DAST).
+ *
+ * Erklärt den Black-Box-Ansatz: DAST testet eine laufende Anwendung von außen,
+ * sendet automatisiert XSS-Payloads an Formulare/URL-Parameter und prüft,
+ * ob Schadcode ungefiltert zurückgespiegelt oder gespeichert wird.
+ *
+ * Route: `/xss/dast`
+ * Verlinkt von {@link XssSchutz}.
+ */
 export default function Dast() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-8 gap-6">

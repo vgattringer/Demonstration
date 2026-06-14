@@ -4,6 +4,17 @@ import { Arrow, TraceBlock } from "@/components/CodeTrace"
 // GetCsrfCodeTrace
 // ---------------------------------------------------------------------------
 
+/**
+ * Code-Trace für das GET-CSRF-Szenario (E-Mail-Änderung via Link-Klick).
+ *
+ * Visualisiert den zweiphasigen Angriff:
+ * - **Phase 1** (immer sichtbar nach Klick): Manipulierter GET-Link → Browser sendet
+ *   Session-Cookie → vulnerabler Endpoint ändert E-Mail → lautlose Bestätigung
+ * - **Phase 2** (nur wenn `phase === "takenOver"`): Passwort-Reset-Anfrage →
+ *   Reset-Link landet im Angreifer-Postfach → Account vollständig übernommen
+ *
+ * @param phase - Aktuelle Phase der {@link GetCsrf}-Demonstration
+ */
 export function GetCsrfCodeTrace({ phase }: { phase: "idle" | "emailChanged" | "takenOver" }) {
   if (phase === "idle") {
     return (
@@ -113,6 +124,19 @@ https://app.firma.at/reset?token=a9f3c2e1...`}
 // DeleteCsrfCodeTrace
 // ---------------------------------------------------------------------------
 
+/**
+ * Code-Trace für das DELETE-CSRF-Szenario (Benutzer-Löschung via Malicious Page).
+ *
+ * Visualisiert vier Schritte:
+ * 1. Malicious Page feuert automatisch `fetch("DELETE ...", credentials: "include")`
+ * 2. Browser hängt Admin-Session-Cookie an den Request
+ * 3. Vulnerabler DELETE-Endpoint ohne CSRF-Token-Check führt die Löschung aus
+ * 4. Benutzer ist gelöscht, der Admin merkt nichts
+ *
+ * Zeigt Platzhalter-Text, solange `deleted === false`.
+ *
+ * @param deleted - `true` sobald der Link in {@link DeleteCrsf} geklickt wurde
+ */
 export function DeleteCsrfCodeTrace({ deleted }: { deleted: boolean }) {
   if (!deleted) {
     return (

@@ -8,12 +8,31 @@ import { XSS_PAYLOAD, StoredComment, StoredOutput } from "./XssCodeTrace"
 // Internal helpers
 // ---------------------------------------------------------------------------
 
+/**
+ * Demonstrationsphasen der Stored-XSS-Simulation.
+ * - `"attacker"` — Angreifer gibt seinen Schadcode-Kommentar ein
+ * - `"user"`     — Legitimer User lädt die Kommentarseite
+ * - `"done"`     — Ergebnis wird angezeigt
+ */
 type Phase = "attacker" | "user" | "done"
 
 // ---------------------------------------------------------------------------
 // StoredXss
 // ---------------------------------------------------------------------------
 
+/**
+ * Interaktive Stored-XSS-Demonstration in zwei Schritten.
+ *
+ * **Schritt 1 (Angreifer):** Sendet einen Schadcode-Kommentar an
+ * `/api/xss/comments-safe` oder `/api/xss/comments-unsafe`.
+ *
+ * **Schritt 2 (legitimer User):** Lädt alle Kommentare und rendert sie
+ * entweder sicher (JSX auto-escaping) oder unsicher (`dangerouslySetInnerHTML`).
+ * Nur die Kombination „unsicher gespeichert + unsicher gerendert" löst XSS aus.
+ *
+ * @param onOutput - Callback nach jedem Schritt; gibt den aktuellen Zustand
+ *   für den Code-Trace weiter.
+ */
 export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void }) {
   const [input, setInput] = useState("")
   const [phase, setPhase] = useState<Phase>("attacker")
@@ -28,6 +47,11 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
     return () => document.removeEventListener("xss-triggered", handler)
   }, [])
 
+  /**
+   * Schritt 1: Sendet den Angreifer-Kommentar an das Backend.
+   *
+   * @param safe - `true` → sicherer Endpunkt (HtmlEncode), `false` → unsicherer Endpunkt (Rohinhalt)
+   */
   async function handleAttackerSubmit(safe: boolean) {
     setXssTriggered(false)
     const endpoint = safe ? "/api/xss/comments-safe" : "/api/xss/comments-unsafe"
@@ -44,6 +68,12 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
     onOutput({ attackerSafe: safe, attackerComment: submitted })
   }
 
+  /**
+   * Schritt 2: Sendet den User-Kommentar, lädt alle gespeicherten Einträge
+   * und rendert sie sicher oder unsicher.
+   *
+   * @param safe - `true` → sicheres JSX-Rendering, `false` → `dangerouslySetInnerHTML`
+   */
   async function handleUserSubmit(safe: boolean) {
     const endpoint = safe ? "/api/xss/comments-safe" : "/api/xss/comments-unsafe"
     await fetch(endpoint, {
@@ -58,6 +88,10 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
     onOutput({ attackerSafe: attackerSafe!, attackerComment, userSafe: safe, userEntries: entries })
   }
 
+  /**
+   * Setzt die gesamte Demonstration zurück auf den Initialzustand.
+   * Löscht alle Kommentare in der Datenbank via `DELETE /api/xss/comments`.
+   */
   async function reset() {
     await fetch("/api/xss/comments", { method: "DELETE" })
     setPhase("attacker")

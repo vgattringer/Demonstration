@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 
+/**
+ * Vergleichsseite: Stored XSS vs. Reflected XSS.
+ *
+ * Stellt beide XSS-Varianten anhand von sieben Kriterien (Funktionsweise,
+ * Persistenz, Betroffene, Angriffsvektor, Beispiel, Gefährlichkeit, Erkennbarkeit)
+ * in einer Tabelle gegenüber.
+ *
+ * Erreichbar über den "Stored versus Reflected XSS"-Button auf {@link CrossSiteScripting}.
+ * Route: `/stored-vs-reflected`
+ */
 export default function StoredVsReflectedXss() {
   return (
     <div className="flex min-h-svh flex-col p-8 gap-6">

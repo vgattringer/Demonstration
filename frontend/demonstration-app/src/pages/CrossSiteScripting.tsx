@@ -16,8 +16,28 @@ import { ReflectedXss } from "./cross-site-scripting/ReflectedXss"
 import { StoredXss } from "./cross-site-scripting/StoredXss"
 import { ReflectedCodeTrace, StoredCodeTrace, ReflectedOutput, StoredOutput } from "./cross-site-scripting/XssCodeTrace"
 
+/**
+ * Aktiver Demonstrationsmodus auf der XSS-Seite.
+ * - `"reflected"` — Reflected-XSS-Demo
+ * - `"stored"`    — Stored-XSS-Demo
+ * - `null`        — kein Modus ausgewählt (Initialzustand)
+ */
 type XssMode = "reflected" | "stored" | null
 
+/**
+ * Hauptseite der Cross-Site-Scripting-Demonstration.
+ *
+ * Dreispaltiges Layout:
+ * 1. {@link XssInfoCard} — Theorie-Erklärung
+ * 2. Dropdown-Auswahl + interaktive Demo ({@link ReflectedXss} oder {@link StoredXss})
+ * 3. Zugehöriger Code-Trace ({@link ReflectedCodeTrace} oder {@link StoredCodeTrace})
+ *
+ * Hält den gemeinsamen Modus-State und die jeweiligen Output-States;
+ * reicht sie als Props an die Sub-Komponenten weiter.
+ *
+ * @see {@link StoredVsReflectedXss} für den Vergleich beider XSS-Varianten
+ * @see {@link XssSchutz} für die Schutzmaßnahmen-Seite
+ */
 export default function CrossSiteScripting() {
   const [mode, setMode] = useState<XssMode>(null)
   const [reflectedOutput, setReflectedOutput] = useState<ReflectedOutput | null>(null)

@@ -5,12 +5,42 @@ const ATTACK_URL  = `https://app.firma.at/account/settings?email=maria%40evil.co
 const ALICE_EMAIL = "alice@firma.at"
 const MARIA_EMAIL = "maria@evil.com"
 
+/**
+ * Phasenzustand der GET-CSRF-Demonstration (identisch mit {@link GetPhase} in CrossSiteRequestForgery).
+ * - `"idle"`         — Ausgangszustand
+ * - `"emailChanged"` — Alice' E-Mail wurde via Link-Klick geändert
+ * - `"takenOver"`    — Maria hat erfolgreich den Account übernommen
+ */
 type Phase = "idle" | "emailChanged" | "takenOver"
 
+/**
+ * Interaktive GET-CSRF-Demonstration (zweiphasige Account-Übernahme).
+ *
+ * **Phase 1:** Simuliert eine Phishing-Mail mit einem manipulierten GET-Link,
+ * der beim Klick Alices E-Mail auf `maria@evil.com` ändert — ohne dass Alice
+ * es bemerkt.
+ *
+ * **Phase 2:** Maria fordert einen Passwort-Reset für Alices Account an;
+ * der Reset-Link landet in Marias Postfach und schließt die Account-Übernahme ab.
+ *
+ * Zeigt auch eine Erklärung, warum SameSite=Lax diesen Angriff bei GET-Requests
+ * nicht verhindert.
+ *
+ * @param onPhaseChange - Callback bei Phasenwechsel; wird von {@link CrossSiteRequestForgery}
+ *   verwendet, um {@link GetCsrfCodeTrace} zu aktualisieren.
+ */
 export default function GetCsrf({ onPhaseChange }: { onPhaseChange: (p: Phase) => void }) {
   const [emailChanged, setEmailChanged] = useState(false)
   const [takenOver,    setTakenOver]    = useState(false)
 
+  /**
+   * Behandelt den Klick auf den Phishing-Link in der simulierten E-Mail.
+   *
+   * Verhindert echte Navigation, simuliert die E-Mail-Änderung und
+   * informiert den Parent über den Phasenwechsel auf `"emailChanged"`.
+   *
+   * @param e - React-Maus-Event des Anchor-Tags
+   */
   function handleLinkClick(e: React.MouseEvent) {
     e.preventDefault()
     setEmailChanged(true)

@@ -1,8 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
-/// Wiederverwendbare Card mit dem "Was ist Cross-Site Request Forgery (CSRF)?"-Inhalt.
-/// Wird in CrossSiteRequestForgery.tsx verwendet.
+/**
+ * Wiederverwendbare Info-Card mit der CSRF-Erklärung.
+ *
+ * Erklärt Begriff, Funktionsweise und Abgrenzung zu SQL-Injection/XSS.
+ * Quelle: OWASP Cross-Site Request Forgery Prevention Cheat Sheet.
+ *
+ * Wird verwendet in:
+ * - {@link CrossSiteRequestForgery} (Hauptseite)
+ * - {@link CrsfSchutz} (Schutzmaßnahmen-Seite)
+ *
+ * @param className - Optionale zusätzliche CSS-Klassen (z.B. `"flex-1"` für Layout-Zwecke)
+ */
 export default function CsrfInfoCard({ className }: { className?: string }) {
   return (
     <Card className={cn("shadow-md", className)}>

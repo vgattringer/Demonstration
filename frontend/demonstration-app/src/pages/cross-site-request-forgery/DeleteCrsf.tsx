@@ -10,10 +10,31 @@ const INITIAL_USERS = [
   { id: 43, name: "Markus Gruber", role: "Vertrieb" },
 ]
 
+/**
+ * Interaktive DELETE-CSRF-Demonstration (Benutzer-Löschung via Malicious Page).
+ *
+ * Zeigt ein simuliertes Firmen-Intranet mit einer Benutzerliste und eine
+ * Phishing-Mail. Beim Klick auf den Link wird der `handleLinkClick`-Handler
+ * ausgelöst, der `Sandra Weiss (ID 42)` aus der lokalen State-Liste entfernt und
+ * den `onDeleted`-Callback triggert — als ob die Malicious Page im Hintergrund
+ * automatisch `fetch("DELETE /admin/users/42", { credentials: "include" })` ausgeführt hätte.
+ *
+ * @param onDeleted - Callback nach dem Klick; `true` = Löschung simuliert.
+ *   Wird von {@link CrossSiteRequestForgery} verwendet, um {@link DeleteCsrfCodeTrace}
+ *   zu aktualisieren.
+ */
 export default function DeleteCrsf({ onDeleted }: { onDeleted: (deleted: boolean) => void }) {
   const [users, setUsers] = useState(INITIAL_USERS)
   const [deleted, setDeleted] = useState(false)
 
+  /**
+   * Behandelt den Klick auf den Phishing-Link in der simulierten E-Mail.
+   *
+   * Verhindert echte Navigation, entfernt Sandra Weiss aus der Benutzerliste
+   * und ruft `onDeleted(true)` auf.
+   *
+   * @param e - React-Maus-Event des Anchor-Tags
+   */
   function handleLinkClick(e: React.MouseEvent) {
     e.preventDefault()
     setUsers(u => u.filter(user => user.id !== 42))

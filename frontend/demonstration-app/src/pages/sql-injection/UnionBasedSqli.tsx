@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+/**
+ * Erklärungsseite: Union-based SQL-Injection.
+ *
+ * Beschreibt das Angriffsprinzip: Der Angreifer hängt via `UNION SELECT`
+ * eine eigene Abfrage an die originale an und erhält so direkt Daten
+ * aus beliebigen Tabellen in der HTTP-Antwort.
+ *
+ * Route: `/sql-injection/union-based`
+ * Verlinkt von {@link SqlInjectionInfoCard}.
+ */
 export default function UnionBasedSqli() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-8 gap-6">

@@ -1,6 +1,17 @@
 import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+/**
+ * Erklärungsseite: Interactive Application Security Testing (IAST).
+ *
+ * Erklärt den hybriden Ansatz: Ein Agent läuft innerhalb der laufenden Anwendung
+ * und beobachtet den Datenfluss in Echtzeit während Tests ausgeführt werden.
+ * Bei XSS erkennt IAST den kompletten Pfad von HTTP-Anfrage bis zur
+ * ungefilterten HTML-Ausgabe inklusive Aufrufpfad und Codezeile.
+ *
+ * Route: `/xss/iast`
+ * Verlinkt von {@link XssSchutz}.
+ */
 export default function Iast() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-8 gap-6">

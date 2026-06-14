@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+/**
+ * Erklärungsseite: Boolean-based Blind SQL-Injection.
+ *
+ * Beschreibt das Angriffsprinzip: Der Angreifer stellt der Datenbank
+ * Ja/Nein-Fragen und schließt aus dem unterschiedlichen Anwendungsverhalten
+ * auf Daten — ohne direkte Ausgabe von Datenbankwerten.
+ *
+ * Route: `/sql-injection/boolean-based`
+ * Verlinkt von {@link SqlInjectionInfoCard}.
+ */
 export default function BooleanBasedSqli() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-8 gap-6">

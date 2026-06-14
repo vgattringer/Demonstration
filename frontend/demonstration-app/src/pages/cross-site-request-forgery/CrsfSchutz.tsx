@@ -2,6 +2,21 @@ import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import CsrfInfoCard from "@/components/CsrfInfoCard"
 
+/**
+ * Schutzmaßnahmen-Seite für Cross-Site Request Forgery.
+ *
+ * Erklärt serverseitige Maßnahmen für Entwicklerinnen (CSRF-Token, SameSite-Cookie-Attribute,
+ * Double Submit Cookie, Origin/Referer-Prüfung, GET-Endpunkt-Disziplin) sowie
+ * verhaltensbezogene Maßnahmen für Endanwender (Ausloggen, Link-Prüfung, Session-Trennung).
+ *
+ * Enthält hover-aktivierte Tooltips für den `SameSite=Strict`-Eintrag und die
+ * C#-Codebeispiele (unsicher vs. `[ValidateAntiForgeryToken]`).
+ *
+ * Quelle: OWASP CSRF Prevention Cheat Sheet.
+ * Route: `/csrf/schutz`
+ *
+ * @see {@link CrossSiteRequestForgery} für die interaktive Demonstrations-Seite
+ */
 export default function CrsfSchutz() {
   return (
     <div className="flex min-h-svh flex-col p-8 gap-6">

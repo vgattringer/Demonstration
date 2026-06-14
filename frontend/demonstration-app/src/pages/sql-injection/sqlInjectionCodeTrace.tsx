@@ -1,9 +1,12 @@
 import { Arrow, TraceBlock } from "@/components/CodeTrace"
 
-// ---------------------------------------------------------------------------
-// Typen
-// ---------------------------------------------------------------------------
-
+/**
+ * DTO für einen Benutzer-Datensatz aus der Backend-Antwort.
+ *
+ * Entspricht dem `UserResponse`-Record im C#-Backend (`AuthController`).
+ * Enthält bewusst sensible Felder (SVN, Geburtsdatum), um den Schaden
+ * einer erfolgreichen SQL-Injection zu demonstrieren.
+ */
 export interface UserResponse {
   id: number
   username: string
@@ -16,18 +19,35 @@ export interface UserResponse {
   socialSecurityNumber: string
 }
 
+/**
+ * Daten eines einzelnen Login-Versuchs für die Code-Trace-Anzeige.
+ *
+ * Wird von {@link LoginForm} befüllt und an {@link SqlInjCodeTrace} weitergegeben.
+ */
 export interface TraceData {
+  /** Verwendeter Endpunkt: `"login"` (sicher) oder `"login-unsafe"` (unsicher). */
   endpoint: "login" | "login-unsafe"
+  /** Gesendete Anmeldedaten. */
   request: { username: string; authTan: string }
+  /** HTTP-Statuscode der Backend-Antwort (200 oder 401). */
   status: number
+  /** Das tatsächlich ausgeführte SQL-Statement; `null` bei Fehler. */
   executedSql: string | null
+  /** Zurückgegebener Benutzer; `null` bei fehlgeschlagenem Login. */
   response: UserResponse | null
 }
 
-// ---------------------------------------------------------------------------
-// CodeTrace — zeigt POST → Controller → Response live
-// ---------------------------------------------------------------------------
-
+/**
+ * Code-Trace-Komponente für die SQL-Injection-Demonstration.
+ *
+ * Visualisiert den vollständigen Request-Response-Zyklus in vier Schritten:
+ * `POST`-Request → `AuthController.cs`-Code → ausgeführtes SQL → HTTP-Response.
+ *
+ * Zeigt je nach Endpunkt den sicheren (parametrisierten) oder unsicheren
+ * (string-interpolierten) C#-Controller-Code an.
+ *
+ * @param trace - Trace-Daten des letzten Login-Versuchs; `null` zeigt Platzhalter-Text.
+ */
 export function SqlInjCodeTrace({ trace }: { trace: TraceData | null }) {
   if (!trace) {
     return (

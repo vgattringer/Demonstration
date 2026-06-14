@@ -16,14 +16,43 @@ import DeleteCrsf from "@/pages/cross-site-request-forgery/DeleteCrsf.tsx"
 import GetCsrf from "@/pages/cross-site-request-forgery/GetCsrf.tsx"
 import { GetCsrfCodeTrace, DeleteCsrfCodeTrace } from "@/pages/cross-site-request-forgery/CsrfCodeTrace"
 
+/**
+ * Aktiver Demonstrationsmodus auf der CSRF-Seite.
+ * - `"delete"` — DELETE-Request-Szenario (Account-Löschung)
+ * - `"get"`    — GET-Request-Szenario (Session-Übernahme via E-Mail-Änderung)
+ */
 type CsrfMode = "delete" | "get"
+
+/**
+ * Phasenzustand der GET-CSRF-Demonstration.
+ * - `"idle"`         — Ausgangszustand, noch keine Aktion
+ * - `"emailChanged"` — E-Mail-Adresse wurde erfolgreich geändert
+ * - `"takenOver"`    — Account wurde vollständig übernommen
+ */
 type GetPhase = "idle" | "emailChanged" | "takenOver"
 
+/**
+ * Hauptseite der Cross-Site-Request-Forgery-Demonstration.
+ *
+ * Dreispaltiges Layout:
+ * 1. {@link CsrfInfoCard} — Theorie-Erklärung
+ * 2. Dropdown-Auswahl + interaktive Demo ({@link DeleteCrsf} oder {@link GetCsrf})
+ * 3. Zugehöriger Code-Trace ({@link DeleteCsrfCodeTrace} oder {@link GetCsrfCodeTrace})
+ *
+ * Hält Modus-, Phase- und Lösch-State; reicht sie als Props an Sub-Komponenten weiter.
+ *
+ * @see {@link CrsfSchutz} für die Schutzmaßnahmen-Seite
+ */
 export default function CrossSiteRequestForgery() {
   const [mode, setMode] = useState<CsrfMode | null>(null)
   const [getPhase, setGetPhase] = useState<GetPhase>("idle")
   const [csrfDeleted, setCsrfDeleted] = useState(false)
 
+  /**
+   * Wechselt den Demo-Modus und setzt alle abhängigen States zurück.
+   *
+   * @param v - Neuer Modus-Wert (`"delete"` oder `"get"`)
+   */
   function handleModeChange(v: string) {
     setMode(v as CsrfMode)
     setGetPhase("idle")

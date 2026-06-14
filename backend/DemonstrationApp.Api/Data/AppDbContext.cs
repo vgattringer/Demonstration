@@ -19,8 +19,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // HasData() befüllt die Tabelle beim ersten Anlegen mit Mock-Daten.
-        // Konstruktor-Reihenfolge: username, firstName, lastName, email,
-        //                          city, postalCode, dateOfBirth, socialSecurityNumber, authTan
+        // Konstruktor-Reihenfolge: username, firstName, lastName, email, city, postalCode, dateOfBirth, socialSecurityNumber, authTan
         modelBuilder.Entity<User>().HasData(
             new User("anna.gruber",   "Anna",   "Gruber",  "anna.gruber@example.at",    "Wien",            "1010", new DateOnly(1990,  3, 15), "1234-150390", "482910") { Id = 1  },
             new User("markus.huber",  "Markus", "Huber",   "markus.huber@example.at",   "Graz",            "8010", new DateOnly(1985,  7, 22), "2345-220785", "739104") { Id = 2  },

@@ -1,8 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
-/// Wiederverwendbare Card mit dem "Was ist Cross-Site Scripting (XSS)?"-Inhalt.
-/// Wird sowohl in CrossSiteScripting.tsx als auch in XssSchutz.tsx verwendet.
+/**
+ * Wiederverwendbare Info-Card mit der XSS-Erklärung.
+ *
+ * Erklärt Begriff, Angriffsprinzip und Auswirkungen (Cookie-/Session-Diebstahl,
+ * DOM-Manipulation). Quelle: OWASP XSS Attack Description.
+ *
+ * Wird verwendet in:
+ * - {@link CrossSiteScripting} (Hauptseite)
+ * - {@link XssSchutz} (Schutzmaßnahmen-Seite)
+ *
+ * @param className - Optionale zusätzliche CSS-Klassen (z.B. `"flex-1"` für Layout-Zwecke)
+ */
 export default function XssInfoCard({ className }: { className?: string }) {
   return (
     <Card className={cn("shadow-md", className)}>

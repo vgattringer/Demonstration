@@ -2,6 +2,21 @@ import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import XssInfoCard from "@/components/XssInfoCard"
 
+/**
+ * Schutzmaßnahmen-Seite für Cross-Site Scripting.
+ *
+ * Erklärt fünf konkrete Maßnahmen (Output-Encoding, CSP, HttpOnly-Cookies,
+ * Whitelist-Validierung, sichere Frameworks) und zeigt ein PHP-Beispiel
+ * für unsicheren vs. sicheren Umgang mit User-Input.
+ *
+ * Verlinkt außerdem auf die Unterseiten {@link Sast}, {@link Dast} und {@link Iast}
+ * für Testing-Tools.
+ *
+ * Quelle: OWASP Cross Site Scripting Prevention Cheat Sheet.
+ * Route: `/xss/schutz`
+ *
+ * @see {@link CrossSiteScripting} für die interaktive Demonstrations-Seite
+ */
 export default function XssSchutz() {
   return (
     <div className="flex min-h-svh flex-col p-8 gap-6">

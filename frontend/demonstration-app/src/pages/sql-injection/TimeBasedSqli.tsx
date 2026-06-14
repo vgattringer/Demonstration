@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+/**
+ * Erklärungsseite: Time-based Blind SQL-Injection.
+ *
+ * Beschreibt das Angriffsprinzip: Der Angreifer nutzt `SLEEP()`-Funktionen,
+ * um die Antwortzeit zu verzögern und so Daten Bit für Bit auszulesen —
+ * ganz ohne sichtbare Ausgabe in der Antwort.
+ *
+ * Route: `/sql-injection/time-based`
+ * Verlinkt von {@link SqlInjectionInfoCard}.
+ */
 export default function TimeBasedSqli() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-8 gap-6">

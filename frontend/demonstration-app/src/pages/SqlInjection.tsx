@@ -11,9 +11,13 @@ import { SqlInjCodeTrace, TraceData, UserResponse } from "@/pages/sql-injection/
 // Typen
 // ---------------------------------------------------------------------------
 
-// Entspricht LoginResponse aus dem Backend
+/**
+ * Entspricht dem `LoginResponse`-DTO aus dem C#-Backend (`AuthController`).
+ */
 interface LoginResponse {
+  /** Der gefundene Benutzer nach erfolgreichem Login. */
   user: UserResponse
+  /** Das tatsächlich ausgeführte SQL-Statement (für die Code-Trace-Anzeige). */
   executedSql: string
 }
 
@@ -21,6 +25,15 @@ interface LoginResponse {
 // UserTable — zeigt den gefundenen Datensatz
 // ---------------------------------------------------------------------------
 
+/**
+ * Tabellenansicht für einen einzelnen Benutzer-Datensatz.
+ *
+ * Wird nach einem erfolgreichen Login-Versuch in {@link LoginForm} angezeigt.
+ * Zeigt bewusst sensible Felder (SVN, Geburtsdatum), um den Schaden
+ * einer erfolgreichen SQL-Injection zu verdeutlichen.
+ *
+ * @param user - Benutzerdaten aus der Backend-Antwort
+ */
 function UserTable({ user }: { user: UserResponse }) {
   const rows: [string, string][] = [
     ["ID",                 String(user.id)],
@@ -52,12 +65,30 @@ function UserTable({ user }: { user: UserResponse }) {
 // LoginForm — übergibt Trace-Daten nach oben via onTrace
 // ---------------------------------------------------------------------------
 
+/**
+ * Login-Formular mit sicherem und unsicherem Backend-Endpunkt.
+ *
+ * Schickt Username und TAN wahlweise an `/api/auth/login` (Prepared Statements)
+ * oder `/api/auth/login-unsafe` (String-Interpolation). Gibt die vollständigen
+ * Trace-Daten nach jedem Versuch per Callback nach oben weiter.
+ *
+ * @param onTrace - Callback, der nach jedem Login-Versuch aufgerufen wird;
+ *   erhält Request-Body, HTTP-Status, ausgeführtes SQL und ggf. den Benutzer
+ */
 function LoginForm({ onTrace }: { onTrace: (trace: TraceData) => void }) {
   const [username, setUsername] = useState("")
   const [tan, setTan] = useState("")
   const [result, setResult] = useState<UserResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  /**
+   * Sendet die Login-Daten an den gewählten Endpunkt und verarbeitet die Antwort.
+   *
+   * Bei HTTP 200: Zeigt den Benutzer-Datensatz an und löst `onTrace` aus.
+   * Bei HTTP 401: Zeigt Fehlermeldung und löst `onTrace` ohne Benutzer aus.
+   *
+   * @param endpoint - `"login"` für sicheren, `"login-unsafe"` für unsicheren Endpunkt
+   */
   async function handleLogin(endpoint: "login" | "login-unsafe") {
     setResult(null)
     setError(null)
@@ -126,6 +157,19 @@ function LoginForm({ onTrace }: { onTrace: (trace: TraceData) => void }) {
 // SqlInjection — hält den gemeinsamen Trace-State
 // ---------------------------------------------------------------------------
 
+/**
+ * Hauptseite der SQL-Injection-Demonstration.
+ *
+ * Dreispaltiges Layout:
+ * 1. {@link SqlInjectionInfoCard} — Theorie-Erklärung
+ * 2. {@link LoginForm} — interaktive Demonstration (sicher vs. unsicher)
+ * 3. {@link SqlInjCodeTrace} — Live-Anzeige des Request/Response-Zyklus
+ *
+ * Hält den gemeinsamen {@link TraceData}-State und reicht ihn als
+ * Props an `LoginForm` (Schreiben via `onTrace`) und `SqlInjCodeTrace` (Lesen) weiter.
+ *
+ * @see {@link SqlInjectionSchutz} für die Schutzmaßnahmen-Seite
+ */
 export default function SqlInjection() {
   const [trace, setTrace] = useState<TraceData | null>(null)
 

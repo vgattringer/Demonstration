@@ -2,6 +2,15 @@ import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
+/**
+ * Interner Navigations-Link mit Unterstreich-Styling.
+ *
+ * Wrapper um React Router `<Link>`, der konsistent als Inline-Textlink
+ * innerhalb von Fließtext verwendet wird.
+ *
+ * @param to       - Zielpfad (React Router), z.B. `"/sql-injection/boolean-based"`
+ * @param children - Linktext
+ */
 function InlineLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <Link to={to} className="underline underline-offset-2 hover:text-muted-foreground">
@@ -10,8 +19,18 @@ function InlineLink({ to, children }: { to: string; children: React.ReactNode })
   )
 }
 
-/// Wiederverwendbare Card mit dem "Was ist SQL-Injection?"-Inhalt.
-/// Wird sowohl in SqlInjection.tsx als auch in SqlInjectionSchutz.tsx verwendet.
+/**
+ * Wiederverwendbare Info-Card mit der SQL-Injection-Erklärung.
+ *
+ * Erklärt Begriff, Funktionsweise anhand eines konkreten Beispiels
+ * und verlinkt die drei Hauptvarianten (Boolean-based, Union-based, Time-based).
+ *
+ * Wird verwendet in:
+ * - {@link SqlInjection} (Hauptseite)
+ * - {@link SqlInjectionSchutz} (Schutzmaßnahmen-Seite)
+ *
+ * @param className - Optionale zusätzliche CSS-Klassen (z.B. `"flex-1"` für Layout-Zwecke)
+ */
 export default function SqlInjectionInfoCard({ className }: { className?: string }) {
   return (
     <Card className={cn("shadow-md", className)}>

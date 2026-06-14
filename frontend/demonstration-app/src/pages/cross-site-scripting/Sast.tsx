@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+/**
+ * Erklärungsseite: Static Application Security Testing (SAST).
+ *
+ * Erklärt das Shift-Left-Prinzip: SAST analysiert Quellcode, Bytecode oder
+ * Binärcode ohne Ausführung und erkennt XSS-Schwachstellen wie
+ * unkontrolliertes `dangerouslySetInnerHTML` bereits vor dem ersten Build.
+ *
+ * Route: `/xss/sast`
+ * Verlinkt von {@link XssSchutz}.
+ */
 export default function Sast() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-8 gap-6">

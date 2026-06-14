@@ -21,7 +21,10 @@ import Sast from "@/pages/cross-site-scripting/Sast"
 import Dast from "@/pages/cross-site-scripting/Dast"
 import Iast from "@/pages/cross-site-scripting/Iast"
 
-// Jeder Eintrag kennt seinen Titel und seinen Zielpfad.
+/**
+ * Navigationsdaten für die Startseite.
+ * Jeder Eintrag definiert einen Carousel-Slide mit Titel und Zielpfad.
+ */
 const sections = [
   { id: 1, title: "SQL-Injection",                   path: "/sql-injection" },
   { id: 2, title: "Cross-Site Scripting (XSS)",      path: "/xss" },
@@ -29,7 +32,13 @@ const sections = [
   { id: 4, title: "Cross-Site Request Forgery (CSRF)", path: "/csrf" },
 ]
 
-// Die Übersichtsseite mit dem Carousel.
+/**
+ * Startseite der Anwendung.
+ *
+ * Zeigt alle verfügbaren Lerninhalte als scrollbaren Carousel an.
+ * Jede Karte navigiert per React Router `<Link>` ohne Seitenreload
+ * zur entsprechenden Detailseite.
+ */
 function Home() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-8">
@@ -57,7 +66,29 @@ function Home() {
   )
 }
 
-// Routes bildet die URL auf die jeweilige Komponente ab.
+/**
+ * Wurzelkomponente der Anwendung.
+ *
+ * Definiert alle Client-seitigen Routen via React Router `<Routes>`.
+ * Wird von `main.tsx` innerhalb von `<BrowserRouter>` gerendert.
+ *
+ * @remarks
+ * Routenübersicht:
+ * - `/`                          → {@link Home}
+ * - `/sql-injection`             → SQL-Injection Hauptseite
+ * - `/sql-injection/boolean-based` → Boolean-based Blind SQLi Erklärung
+ * - `/sql-injection/union-based`   → Union-based SQLi Erklärung
+ * - `/sql-injection/time-based`    → Time-based Blind SQLi Erklärung
+ * - `/sql-injection/schutz`        → Schutzmaßnahmen SQL-Injection
+ * - `/xss`                       → XSS Hauptseite
+ * - `/xss/schutz`                → Schutzmaßnahmen XSS
+ * - `/xss/sast`                  → SAST Erklärung
+ * - `/xss/dast`                  → DAST Erklärung
+ * - `/xss/iast`                  → IAST Erklärung
+ * - `/csrf`                      → CSRF Hauptseite
+ * - `/csrf/schutz`               → Schutzmaßnahmen CSRF
+ * - `/stored-vs-reflected`       → Stored vs. Reflected XSS Vergleich
+ */
 function App() {
   return (
     <Routes>

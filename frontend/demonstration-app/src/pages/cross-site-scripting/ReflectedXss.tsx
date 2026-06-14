@@ -7,6 +7,21 @@ const ATTACK_URL = `https://seite.at/suche?q=${XSS_PAYLOAD}`
 // ReflectedXss
 // ---------------------------------------------------------------------------
 
+/**
+ * Interaktive Reflected-XSS-Demonstration.
+ *
+ * Zeigt eine simulierte Phishing-E-Mail mit einem präparierten Link.
+ * Wenn das Opfer den Link anklickt, wird der XSS-Payload
+ * via `dangerouslySetInnerHTML` in den DOM gerendert, was den `onerror`-Handler
+ * des `<img>`-Tags auslöst. Das daraus resultierende `xss-triggered`-Event
+ * wird abgehört und löst den XSS-Warnbanner aus.
+ *
+ * @param onOutput - Callback bei Link-Klick; gibt den Payload und `safe: false` weiter.
+ *
+ * @remarks
+ * Der eigentliche Schadcode wird in einem versteckten `<div>` via
+ * `dangerouslySetInnerHTML` gerendert — das ist die absichtliche Sicherheitslücke.
+ */
 export function ReflectedXss({ onOutput }: { onOutput: (o: ReflectedOutput) => void }) {
   const [clicked, setClicked] = useState(false)
   const [xssTriggered, setXssTriggered] = useState(false)
@@ -17,6 +32,14 @@ export function ReflectedXss({ onOutput }: { onOutput: (o: ReflectedOutput) => v
     return () => document.removeEventListener("xss-triggered", handler)
   }, [])
 
+  /**
+   * Behandelt den Klick auf den Phishing-Link in der simulierten E-Mail.
+   *
+   * Verhindert die echte Navigation, setzt `clicked` auf `true` (löst
+   * `dangerouslySetInnerHTML` aus) und informiert den Parent über den Output.
+   *
+   * @param e - React-Maus-Event des Anchor-Tags
+   */
   function handleLinkClick(e: React.MouseEvent) {
     e.preventDefault()
     setClicked(true)

@@ -5,13 +5,16 @@ const ATTACK_URL  = `https://app.firma.at/account/settings?email=maria%40evil.co
 const ALICE_EMAIL = "alice@firma.at"
 const MARIA_EMAIL = "maria@evil.com"
 
-export default function GetCsrf() {
+type Phase = "idle" | "emailChanged" | "takenOver"
+
+export default function GetCsrf({ onPhaseChange }: { onPhaseChange: (p: Phase) => void }) {
   const [emailChanged, setEmailChanged] = useState(false)
   const [takenOver,    setTakenOver]    = useState(false)
 
   function handleLinkClick(e: React.MouseEvent) {
     e.preventDefault()
     setEmailChanged(true)
+    onPhaseChange("emailChanged")
   }
 
   return (
@@ -95,7 +98,7 @@ export default function GetCsrf() {
               <p className="text-muted-foreground">Maria öffnet die Passwort-vergessen-Seite und gibt Alices Benutzernamen ein:</p>
               <div className="flex items-center gap-2">
                 <code className="bg-muted px-2 py-1 rounded text-[11px]">alice_w</code>
-                <Button size="sm" className="h-6 text-[11px] px-2" onClick={() => setTakenOver(true)}>
+                <Button size="sm" className="h-6 text-[11px] px-2" onClick={() => { setTakenOver(true); onPhaseChange("takenOver") }}>
                   Reset anfordern
                 </Button>
               </div>

@@ -2,35 +2,13 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Arrow, TraceBlock, XSS_PAYLOAD, StoredComment, StoredOutput } from "./shared"
+import { XSS_PAYLOAD, StoredComment, StoredOutput } from "./XssCodeTrace"
 
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 
 type Phase = "attacker" | "user" | "done"
-
-function PayloadLinks({ onMalicious, onLegit }: { onMalicious: () => void; onLegit: () => void }) {
-  return (
-    <span className="flex gap-2 text-xs">
-      <button
-        type="button"
-        onClick={onMalicious}
-        className="text-destructive underline underline-offset-2 hover:opacity-80"
-      >
-        Malicious Payload
-      </button>
-      <span className="text-muted-foreground">|</span>
-      <button
-        type="button"
-        onClick={onLegit}
-        className="text-muted-foreground underline underline-offset-2 hover:text-foreground"
-      >
-        Normaler User Payload
-      </button>
-    </span>
-  )
-}
 
 // ---------------------------------------------------------------------------
 // StoredXss
@@ -109,10 +87,13 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="stored-input-attacker">Kommentar posten:</Label>
-                <PayloadLinks
-                  onMalicious={() => setInput(XSS_PAYLOAD)}
-                  onLegit={() => setInput("Ich möchte auch meinen Quargel posten.")}
-                />
+                <button
+                  type="button"
+                  onClick={() => setInput(XSS_PAYLOAD)}
+                  className="text-xs text-destructive underline underline-offset-2 hover:opacity-80"
+                >
+                  Malicious Payload
+                </button>
               </div>
               <Input id="stored-input-attacker" value={input} readOnly />
             </div>
@@ -156,32 +137,39 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="stored-input-user">Kommentar suchen:</Label>
-                  <PayloadLinks
-                    onMalicious={() => setInput(XSS_PAYLOAD)}
-                    onLegit={() => setInput("Gib mir alle Post aus.")}
-                  />
+                  <button
+                    type="button"
+                    onClick={() => setInput("Gib mir alle Post aus.")}
+                    className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                  >
+                    Normaler User Payload
+                  </button>
                 </div>
                 <Input id="stored-input-user" value={input} readOnly />
               </div>
               <div className="flex gap-2">
-                <Button type="button" className="flex-1" onClick={() => handleUserSubmit(true)}>
-                  Sicherer Submit-Button
-                </Button>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  className="flex-1"
-                  onClick={() => handleUserSubmit(false)}
-                >
-                  Unsicherer Submit-Button
-                </Button>
+                {attackerSafe ? (
+                  <Button type="button" className="flex-1" onClick={() => handleUserSubmit(true)}>
+                    Sicherer Submit-Button
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="flex-1"
+                    onClick={() => handleUserSubmit(false)}
+                  >
+                    Unsicherer Submit-Button
+                  </Button>
+                )}
               </div>
             </>
           )}
 
           {phase === "done" && userResult && (
             <div className="flex flex-col gap-2">
-              {xssTriggered && (
+              {/* XSS-Warnung nur zeigen, wenn Angreifer unsicher gespeichert hat UND User unsicher rendert */}
+              {xssTriggered && !attackerSafe && !userResult.safe && (
                 <div className="rounded-md bg-destructive/10 border border-destructive px-3 py-2 text-xs text-destructive flex flex-col gap-2">
                   <p className="font-semibold">⚠ XSS erfolgreich! Schadcodesimulation:</p>
                   <pre className="whitespace-pre-wrap font-mono">
@@ -192,16 +180,24 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
 
               {userResult.safe ? (
                 <p className="text-xs text-green-600">✓ Kein Schadcode wird ausgeführt</p>
+              ) : attackerSafe ? (
+                /* Schritt 1 war sicher → kein Schadcode in der DB, aber unsicherer Render-Pfad bleibt ein Risiko */
+                <p className="text-xs text-amber-600">
+                  ⚠ Hier passiert noch nichts – es wurde kein Schadcode hinterlegt. Solange jedoch
+                  Schadcode über einen unsicheren Endpunkt eingeschleust werden kann, hat das System
+                  ein Sicherheitsrisiko.
+                </p>
               ) : (
+                /* Schritt 1 unsicher + Schritt 2 unsicher → tatsächliche XSS-Ausführung */
                 <p className="text-xs text-muted-foreground">
                   Ein anderer User besucht ebenfalls <span className="font-medium">www.seite.at</span> und
-                  und möchte sich über das Suchfeld alle Posts ausgeben lassen. Er klickt auf Submit (manchmal reicht es auch schon, die Seite
+                  möchte sich über das Suchfeld alle Posts ausgeben lassen. Er klickt auf Submit (manchmal reicht es auch schon, die Seite
                   einfach nur zu besuchen) und löst den Schadcode aus.
                 </p>
               )}
 
-              {/* ⚠️ UNSICHER: Gespeicherte Einträge werden als HTML gerendert – Stored XSS */}
-              {!userResult.safe &&
+              {/* ⚠️ UNSICHER: Gespeicherte Einträge als HTML rendern – nur wenn Angreifer unsicher gespeichert hat */}
+              {!userResult.safe && !attackerSafe &&
                 userResult.entries.map((e) => (
                   <div
                     key={e.id}
@@ -225,113 +221,3 @@ export function StoredXss({ onOutput }: { onOutput: (o: StoredOutput) => void })
   )
 }
 
-// ---------------------------------------------------------------------------
-// StoredCodeTrace
-// ---------------------------------------------------------------------------
-
-export function StoredCodeTrace({ output }: { output: StoredOutput | null }) {
-  if (!output) {
-    return (
-      <p className="text-xs text-muted-foreground">
-        Klicke auf „Sicherer Submit-Button" oder „Unsicherer Submit-Button", um den Code-Ablauf zu
-        sehen.
-      </p>
-    )
-  }
-
-  const userDone = output.userSafe !== undefined
-
-  const attackerBackendCode = output.attackerSafe
-    ? `// ✅ SICHER: HtmlEncode vor dem Speichern
-var sanitized = WebUtility.HtmlEncode(content);
-// <  →  &lt;
-// >  →  &gt;
-// "  →  &quot;
-var comment = new Comment(sanitized);
-await db.SaveChangesAsync();`
-    : `// ⚠️ UNSICHER: Rohinhalt direkt gespeichert
-var comment = new Comment(content);
-await db.SaveChangesAsync();`
-
-  const dbValue = output.attackerSafe
-    ? `&lt;img src=x onerror=&quot;document.dispatchEvent(...)&quot;&gt;`
-    : `<img src=x onerror="document.dispatchEvent(new CustomEvent('xss-triggered'))">`
-
-  const renderCode =
-    output.userSafe === true
-      ? `// ✅ SICHER: React escaped automatisch
-entries.map(e => <span>{e.content}</span>)
-// → Inhalt wird als plain text angezeigt`
-      : `// ⚠️ UNSICHER: dangerouslySetInnerHTML
-entries.map(e => (
-  <div dangerouslySetInnerHTML={{ __html: e.content }} />
-))
-// → Inhalt wird als HTML ausgeführt`
-
-  const browserResult =
-    output.userSafe === true
-      ? `→ Payload wird als Text angezeigt.\n   Kein Event feuert. Kein Schaden.`
-      : `→ <img> wird in den DOM eingefügt.\n   src="x" schlägt fehl → onerror feuert.\n   CustomEvent "xss-triggered" dispatched.\n   React Banner: "⚠ XSS erfolgreich!" – für ALLE Besucher.`
-
-  return (
-    <div className="flex flex-col gap-3 text-xs">
-      <TraceBlock
-        step="①"
-        label={`POST /api/xss/comments-${output.attackerSafe ? "safe" : "unsafe"} (Angreifer)`}
-      >
-        {`"${output.attackerComment}"`}
-      </TraceBlock>
-
-      <Arrow />
-
-      <TraceBlock
-        step="②"
-        label={output.attackerSafe ? "XssController – sicher" : "XssController – unsicher"}
-      >
-        {attackerBackendCode}
-      </TraceBlock>
-
-      <Arrow />
-
-      <TraceBlock step="③" label="Gespeichert in DB">
-        {dbValue}
-      </TraceBlock>
-
-      {userDone && (
-        <>
-          <Arrow />
-
-          <TraceBlock step="④" label="GET /api/xss/comments (Legitimer User lädt Seite)">
-            {`// Alle gespeicherten Einträge werden abgerufen\nreturn Ok(await db.Comments.OrderBy(c => c.CreatedAt).ToListAsync());`}
-          </TraceBlock>
-
-          <Arrow />
-
-          <TraceBlock
-            step="⑤"
-            label={
-              output.userSafe
-                ? "Frontend rendert sicher (JSX)"
-                : "Frontend rendert unsicher (dangerouslySetInnerHTML)"
-            }
-          >
-            {renderCode}
-          </TraceBlock>
-
-          <Arrow />
-
-          <TraceBlock
-            step="⑥"
-            label={
-              output.userSafe
-                ? "Browser zeigt Text – kein Script ausgeführt"
-                : "Browser führt Script aus"
-            }
-          >
-            {browserResult}
-          </TraceBlock>
-        </>
-      )}
-    </div>
-  )
-}

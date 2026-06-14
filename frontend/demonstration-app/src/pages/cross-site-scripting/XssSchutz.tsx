@@ -22,10 +22,10 @@ export default function XssSchutz() {
 
             <p>
               Die Hinzufügung von{" "}
-              <Link to="/cross-site-scripting/sast" className="underline underline-offset-2 hover:text-muted-foreground">statischen (SAST)</Link>,{" "}
-              <Link to="/cross-site-scripting/dast" className="underline underline-offset-2 hover:text-muted-foreground">dynamischen (DAST)</Link>{" "}
+              <Link to="/xss/sast" className="underline underline-offset-2 hover:text-muted-foreground">statischen (SAST)</Link>,{" "}
+              <Link to="/xss/dast" className="underline underline-offset-2 hover:text-muted-foreground">dynamischen (DAST)</Link>{" "}
               und{" "}
-              <Link to="/cross-site-scripting/iast" className="underline underline-offset-2 hover:text-muted-foreground">interaktiven (IAST)</Link>{" "}
+              <Link to="/xss/iast" className="underline underline-offset-2 hover:text-muted-foreground">interaktiven (IAST)</Link>{" "}
               Application-Security-Testing-Tools in die CI/CD-Pipeline kann dabei helfen,
               Injection-Schwachstellen vor dem Produktivbetrieb zu identifizieren.{" "}
               <p>

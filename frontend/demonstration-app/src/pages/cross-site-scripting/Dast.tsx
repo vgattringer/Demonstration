@@ -35,7 +35,7 @@ export default function Dast() {
           </p>
         </CardContent>
       </Card>
-      <Link to="/cross-site-scripting/schutz" className="text-sm underline underline-offset-4">
+      <Link to="/xss/schutz" className="text-sm underline underline-offset-4">
         ← Zurück zu Schutzmöglichkeiten
       </Link>
     </div>

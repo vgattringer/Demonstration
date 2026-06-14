@@ -14,6 +14,7 @@ import TimeBasedSqli from "@/pages/sql-injection/TimeBasedSqli"
 import SqlInjectionSchutz from "@/pages/sql-injection/SqlInjectionSchutz"
 import CrossSiteScripting from "@/pages/CrossSiteScripting"
 import CrossSiteRequestForgery from "@/pages/CrossSiteRequestForgery"
+import CrsfSchutz from "@/pages/cross-site-request-forgery/CrsfSchutz"
 import StoredVsReflectedXss from "@/pages/StoredVsReflectedXss"
 import XssSchutz from "@/pages/cross-site-scripting/XssSchutz"
 import Sast from "@/pages/cross-site-scripting/Sast"
@@ -24,8 +25,8 @@ import Iast from "@/pages/cross-site-scripting/Iast"
 const sections = [
   { id: 1, title: "SQL-Injection",                   path: "/sql-injection" },
   { id: 2, title: "Cross-Site Scripting (XSS)",      path: "/xss" },
-  { id: 3, title: "Cross-Site Request Forgery (CSRF)", path: "/csrf" },
-  { id: 4, title: "Stored versus Reflected XSS",     path: "/stored-vs-reflected" },
+  { id: 3, title: "Stored versus Reflected XSS",     path: "/stored-vs-reflected" },
+  { id: 4, title: "Cross-Site Request Forgery (CSRF)", path: "/csrf" },
 ]
 
 // Die Übersichtsseite mit dem Carousel.
@@ -67,11 +68,12 @@ function App() {
       <Route path="/sql-injection/time-based"         element={<TimeBasedSqli />} />
       <Route path="/sql-injection/schutz"             element={<SqlInjectionSchutz />} />
       <Route path="/xss"                element={<CrossSiteScripting />} />
-      <Route path="/cross-site-scripting/schutz" element={<XssSchutz />} />
-      <Route path="/cross-site-scripting/sast"   element={<Sast />} />
-      <Route path="/cross-site-scripting/dast"   element={<Dast />} />
-      <Route path="/cross-site-scripting/iast"   element={<Iast />} />
+      <Route path="/xss/schutz" element={<XssSchutz />} />
+      <Route path="/xss/sast"   element={<Sast />} />
+      <Route path="/xss/dast"   element={<Dast />} />
+      <Route path="/xss/iast"   element={<Iast />} />
       <Route path="/csrf"               element={<CrossSiteRequestForgery />} />
+      <Route path="/csrf/schutz" element={<CrsfSchutz />} />
       <Route path="/stored-vs-reflected" element={<StoredVsReflectedXss />} />
     </Routes>
   )

@@ -14,11 +14,21 @@ import {
 import CsrfInfoCard from "@/components/CsrfInfoCard.tsx"
 import DeleteCrsf from "@/pages/cross-site-request-forgery/DeleteCrsf.tsx"
 import GetCsrf from "@/pages/cross-site-request-forgery/GetCsrf.tsx"
+import { GetCsrfCodeTrace, DeleteCsrfCodeTrace } from "@/pages/cross-site-request-forgery/CsrfCodeTrace"
 
 type CsrfMode = "delete" | "get"
+type GetPhase = "idle" | "emailChanged" | "takenOver"
 
 export default function CrossSiteRequestForgery() {
   const [mode, setMode] = useState<CsrfMode | null>(null)
+  const [getPhase, setGetPhase] = useState<GetPhase>("idle")
+  const [csrfDeleted, setCsrfDeleted] = useState(false)
+
+  function handleModeChange(v: string) {
+    setMode(v as CsrfMode)
+    setGetPhase("idle")
+    setCsrfDeleted(false)
+  }
 
   return (
     <div className="flex min-h-svh flex-col p-8 gap-6">
@@ -41,7 +51,7 @@ export default function CrossSiteRequestForgery() {
               <DropdownMenuContent className="w-40">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>CSRF Attacke</DropdownMenuLabel>
-                  <DropdownMenuRadioGroup value={mode ?? ""} onValueChange={(v) => setMode(v as CsrfMode)}>
+                  <DropdownMenuRadioGroup value={mode ?? ""} onValueChange={handleModeChange}>
                     <DropdownMenuRadioItem value="delete">DELETE Szenario</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="get">GET Szenario</DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
@@ -49,8 +59,8 @@ export default function CrossSiteRequestForgery() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {mode === "delete" && <DeleteCrsf />}
-            {mode === "get" && <GetCsrf />}
+            {mode === "delete" && <DeleteCrsf onDeleted={setCsrfDeleted} />}
+            {mode === "get" && <GetCsrf onPhaseChange={setGetPhase} />}
           </CardContent>
         </Card>
 
@@ -59,7 +69,9 @@ export default function CrossSiteRequestForgery() {
             <CardTitle className="font-bold">Was passiert im Code?</CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Inhalt folgt */}
+            {mode === "get" && <GetCsrfCodeTrace phase={getPhase} />}
+            {mode === "delete" && <DeleteCsrfCodeTrace deleted={csrfDeleted} />}
+            {mode === null && <p className="text-xs text-muted-foreground">Wähle zuerst eine Demonstration aus.</p>}
           </CardContent>
         </Card>
 
@@ -70,7 +82,7 @@ export default function CrossSiteRequestForgery() {
       </Link>
 
       {/* Fixer Button unten rechts */}
-      <Link to="/cross-site-request-forgery/CrsfSchutz" className="fixed bottom-6 right-6">
+      <Link to="/csrf/schutz" className="fixed bottom-6 right-6">
         <Button className="rounded-lg shadow-lg">
           Welche Schutzmöglichkeiten gibt es?
         </Button>

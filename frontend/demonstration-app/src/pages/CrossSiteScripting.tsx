@@ -12,9 +12,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ReflectedXss, ReflectedCodeTrace } from "./cross-site-scripting/ReflectedXss"
-import { StoredXss, StoredCodeTrace } from "./cross-site-scripting/StoredXss"
-import { ReflectedOutput, StoredOutput } from "./cross-site-scripting/shared"
+import { ReflectedXss } from "./cross-site-scripting/ReflectedXss"
+import { StoredXss } from "./cross-site-scripting/StoredXss"
+import { ReflectedCodeTrace, StoredCodeTrace, ReflectedOutput, StoredOutput } from "./cross-site-scripting/XssCodeTrace"
 
 type XssMode = "reflected" | "stored" | null
 
@@ -82,7 +82,7 @@ export default function CrossSiteScripting() {
       </Link>
 
       {/* Fixer Button unten rechts Card 3 */}
-      <Link to="/cross-site-scripting/schutz" className="fixed bottom-6 right-6">
+      <Link to="/xss/schutz" className="fixed bottom-6 right-6">
         <Button className="rounded-lg shadow-lg">
           Welche Schutzmöglichkeiten gibt es?
         </Button>

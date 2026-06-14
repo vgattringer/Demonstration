@@ -10,7 +10,7 @@ const INITIAL_USERS = [
   { id: 43, name: "Markus Gruber", role: "Vertrieb" },
 ]
 
-export default function DeleteCrsf() {
+export default function DeleteCrsf({ onDeleted }: { onDeleted: (deleted: boolean) => void }) {
   const [users, setUsers] = useState(INITIAL_USERS)
   const [deleted, setDeleted] = useState(false)
 
@@ -18,6 +18,7 @@ export default function DeleteCrsf() {
     e.preventDefault()
     setUsers(u => u.filter(user => user.id !== 42))
     setDeleted(true)
+    onDeleted(true)
   }
 
   return (
